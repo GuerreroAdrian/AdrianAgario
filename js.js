@@ -6,7 +6,7 @@ var color = "red";
 var misDatos = {
   nom: "Adrian",
   pos: [Math.random()*800,Math.random()*800],
-  tam: 20,
+  tam: 12,
   col: color
 }
 //Math.random()*800,Math.random()*800
@@ -27,6 +27,7 @@ function actualizar(e){
   jugadores = e[0];
   bolitas = e[1];
   Juez();
+  comeBolitas();
   jugar();
 }
 
@@ -93,14 +94,29 @@ function Juez(){
       if(jugadores[i].nom != misDatos.nom){
         if(jugadores[i].dis < (misDatos.tam*2 + jugadores[i].tam*2)){
           $.get(url + '?eliminarJugador=["'+ misDatos.nom +'","'+ jugadores[i].nom +'"]', ()=>{
-            if(jugadores[i].tam > misDatos.tam){
-              misDatos.pos[0] = Math.random()*800;
-              misDatos.pos[1] = Math.random()*800;
-              misDatos.tam = 12;
+            for (var i = 0; i < jugadores.length; i++){
+              if(jugadores[i].tam > misDatos.tam){
+                misDatos.pos[0] = Math.random()*800;
+                misDatos.pos[1] = Math.random()*800;
+                misDatos.tam = 12;
+              }
             }
-          })
+          });
+          misDatos.tam += jugadores[i].tam/10;
         }
       }
+    }
+  }
+}
+
+function comeBolitas(){
+  for (var i = 0; i < bolitas.length; i++) {
+    var dx = bolitas[i].pos[0] - misDatos.pos[0];
+    var dy = bolitas[i].pos[1] - misDatos.pos[1];
+    var d = Math.sqrt((dx * dx) + (dy * dy));
+    if(d < (misDatos.tam*2 + bolitas[i].tam*2)){
+      $.get(url + '?eliminar=' + i , ()=>{console.log("incremento");});
+      misDatos.tam += bolitas[i].tam/10;
     }
   }
 }
